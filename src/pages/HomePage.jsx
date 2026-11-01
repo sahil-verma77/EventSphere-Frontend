@@ -12,17 +12,17 @@ export default function Home() {
 
   useEffect(() => {
     async function getFeaturedEvents() {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
         let {
           data: { data },
         } = await axios.get(
           "https://eventsphere-server-mfdb.onrender.com/api/events/featured",
         );
-        console.log(data);
         setFeaturedEvents(data);
-      } catch (error) {} finally {
-        setIsLoading(false)
+      } catch (error) {
+      } finally {
+        setIsLoading(false);
       }
     }
     getFeaturedEvents();

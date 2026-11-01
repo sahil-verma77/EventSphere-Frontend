@@ -1,3 +1,6 @@
+# Extra info
+extra_info.txt
+
 # Logs
 logs
 *.log
@@ -22,6 +25,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Extra info
-extra_info.txt
