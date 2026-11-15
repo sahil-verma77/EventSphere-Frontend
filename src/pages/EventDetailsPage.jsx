@@ -53,7 +53,6 @@ export default function EventDetailsPage() {
     }
     fetchEvent();
   }, []);
-  console.log(reviews);
 
   function handleShare() {
     navigator.clipboard.writeText(window.location.href);
