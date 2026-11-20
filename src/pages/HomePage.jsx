@@ -3,22 +3,7 @@ import EventCard from "@/components/events/EventCard";
 import FeaturedCarousel from "@/components/events/FeaturedCarousel";
 import { Button } from "@/components/ui/button";
 import api from "@/lib/axios";
-import {
-  ArrowBigRight,
-  ArrowRight,
-  Briefcase,
-  ChevronRight,
-  Compass,
-  Cpu,
-  Flame,
-  GraduationCap,
-  MapPin,
-  Music,
-  Palette,
-  Sparkles,
-  Tag,
-  Trophy,
-} from "lucide-react";
+import { ArrowBigRight, ArrowRight, Briefcase, ChevronRight, Compass, Cpu, Flame, GraduationCap, MapPin, Music, Palette, Sparkles, Tag, Trophy } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router";
 
@@ -118,21 +103,21 @@ export default function Home() {
           "/api/events/featured",
         );
         setFeaturedEvents(data);
-      } catch (error) {}
+      } catch (error) { }
 
       try {
         let data = await api.get(
           "/api/categories",
         );
         setCategories(data);
-      } catch (error) {}
+      } catch (error) { }
 
       try {
         let data = await api.get(
           "/api/events?limit=8&sort=startDate&order=asc",
         );
         setTrendingEvents(data);
-      } catch (error) {}
+      } catch (error) { }
 
       setIsLoading(false);
     }
@@ -289,7 +274,7 @@ export default function Home() {
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <Skeleton key={i}/>
+              <Skeleton key={i} />
             ))}
           </div>
         ) : (

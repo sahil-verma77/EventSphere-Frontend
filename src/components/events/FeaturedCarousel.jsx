@@ -2,14 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Button } from "../ui/button";
-import {
-  ArrowRight,
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
-  MapPin,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, Calendar, ChevronLeft, ChevronRight, MapPin, Sparkles } from "lucide-react";
 import { Link } from "react-router";
 import { Badge } from "../ui/badge";
 import { formatEventDate, formatPrice } from "@/lib/utils";
@@ -168,11 +161,10 @@ function FeaturedCarousel({ events }) {
           <button
             key={i}
             onClick={() => scrollTo(i)}
-            className={`transition-all rounded-full ${
-              i === selectedIndex
+            className={`transition-all rounded-full ${i === selectedIndex
                 ? "w-6 h-2 bg-[#E65100]"
                 : "w-2 h-2 bg-white/50 hover:bg-white/80"
-            }`}
+              }`}
           />
         ))}
       </div>
