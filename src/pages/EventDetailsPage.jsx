@@ -28,12 +28,12 @@ export default function EventDetailsPage() {
     async function fetchEvent() {
       setIsLoading(true);
       try {
-        let data = await api.get(
+        let { data } = await api.get(
           `/api/events/${slug}`,
         );
         setEvent(data);
 
-        let reviews = await api.get(
+        let { data: reviews } = await api.get(
           `/api/events/${data.id || data._id}/reviews`,
         );
         setReviews(reviews);

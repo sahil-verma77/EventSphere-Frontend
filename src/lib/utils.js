@@ -2,46 +2,46 @@ export { cn } from "cn";
 import { format, formatDistanceToNow, parseISO } from "date-fns";
 
 export function formatPrice(amount, currency = "INR") {
-    const value = Number(amount);
+	const value = Number(amount);
 
-    if (!value) return "Free";
+	if (!value) return "Free";
 
-    return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency,
-        maximumFractionDigits: 0,
-    }).format(value);
+	return new Intl.NumberFormat("en-IN", {
+		style: "currency",
+		currency,
+		maximumFractionDigits: 0,
+	}).format(value);
 }
 
 export function formatEventDate(dateInput) {
-    if (!dateInput) {
-        return;
-    }
-    const date = parseISO(dateInput);
-    return format(date, "E, LLL dd, yyyy");
+	if (!dateInput) {
+		return;
+	}
+	const date = parseISO(dateInput);
+	return format(date, "E, LLL dd, yyyy");
 }
 
 export function formatEventTimeRange(startDate, endDate) {
-    if (!startDate || !endDate) {
-        return;
-    }
-    const start = parseISO(startDate);
-    const startTime = format(start, "p");
-    
-    const end = parseISO(endDate);
-    const endTime = format(end, "p");
+	if (!startDate || !endDate) {
+		return;
+	}
+	const start = parseISO(startDate);
+	const startTime = format(start, "p");
 
-    return `${startTime} - ${endTime} IST`;
+	const end = parseISO(endDate);
+	const endTime = format(end, "p");
+
+	return `${startTime} - ${endTime} IST`;
 }
 
 export function getDaysRemaining(startDate) {
-    if (!startDate) {
-        return;
-    }
-    const eventDate = parseISO(startDate);
-    const currentDate = new Date();
-    if (currentDate > eventDate) {
-        return "Ended";
-    }
-    return formatDistanceToNow(eventDate, {addSuffix: true});
+	if (!startDate) {
+		return;
+	}
+	const eventDate = parseISO(startDate);
+	const currentDate = new Date();
+	if (currentDate > eventDate) {
+		return "Ended";
+	}
+	return formatDistanceToNow(eventDate, { addSuffix: true });
 }

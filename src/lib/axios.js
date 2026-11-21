@@ -6,14 +6,14 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (req) => {
-    req.headers.sahil = "Shatter Kyoka Suigetsu!" // Secrect Token
+    req.headers.bankai = "Shatter Kyoka Suigetsu!" // Secrect Token
     return req;
   },
   (err) => {},
 );
 api.interceptors.response.use(
   (response) => {
-    return response.data.data;
+    return response.data;
   },
   (err) => {},
 );
