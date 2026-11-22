@@ -13,10 +13,14 @@ const filterSlice = createSlice({
   reducers: {
     setFormat(state, action) {
       state.format = action.payload;
+    },
+    setIsPaid(state, action) {
+      // state.isPaid = action.payload === "free" ? false : state.isPaid = action.payload === "paid" ? true : "";
+      state.isPaid = action.payload;
     }
   }
 })
 
-export const { setFormat } = filterSlice.actions;
+export const { setFormat, setIsPaid } = filterSlice.actions;
 
 export default filterSlice.reducer;
