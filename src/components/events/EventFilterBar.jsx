@@ -1,35 +1,42 @@
-import { setIsPaid, setFormat } from "@/store/slices/filterSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router";
+import { useEventFilters } from "@/hooks/useEventFilters";
+import api from "@/lib/axios";
+import { memo, useEffect, useMemo, useState } from "react";
 
-export default function EventFilterBar() {
-  const dispatch = useDispatch();
-  const filters = useSelector((state) => state.filters);
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  function updateParams(updates) {
-    const params = new URLSearchParams(searchParams);
-    Object.entries(updates).forEach(([key, val]) => {
-      if (val !== undefined && val !== "" && val != null) {
-        params.set(key, String(val));
-      } else {
-        params.delete(key);
-      }
-    })
-    setSearchParams(params);
-  }
+export const EventFilterBar = memo(() => {
+  const { updateParams, filters } = useEventFilters();
+  const [categories, setCategories] = useState([]);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
 
   function handleFormatChange(format) {
-    dispatch(setFormat(format));
     updateParams({ format });
   }
 
   function handleIsPaid(entry) {
-    dispatch(setIsPaid(entry));
     updateParams({ isPaid: entry });
   }
 
-  const activeFormat = searchParams.get("format") || filters.format; // For Color Change of Buttons
+  async function fetchCategories() {
+    setIsCategoriesLoading(true);
+    try {
+      let { data } = await api.get(`/api/categories`);
+      setCategories(data);
+    } catch (error) {}
+
+    setIsCategoriesLoading(false);
+  }
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const activeFormat = filters.format; // For Color Change of Buttons
+  const activeCategory = filters.category;
+
+  const totalCategoryEvents = useMemo(() => {
+    return categories.reduce((acc, currVal) => {
+      acc += currVal.eventCount || 0;
+      return acc;
+    }, 0);
+  }, [categories]);
 
   return (
     <div className="space-y-4">
@@ -130,7 +137,9 @@ export default function EventFilterBar() {
             className="px-2.5 py-1 rounded-lg bg-white hover:bg-orange-600 hover:text-white border border-orange-200 text-xs font-semibold text-[#E65100] transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
             <span>Technology & AI</span>
-            <span className="text-[10px] opacity-75 font-mono">(14 events)</span>
+            <span className="text-[10px] opacity-75 font-mono">
+              (14 events)
+            </span>
             <span>→</span>
           </button>
         </div>
@@ -138,97 +147,80 @@ export default function EventFilterBar() {
 
       {/* Categories horizontal pill bar */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        {/* All Disciplines Pill */}
+        {/* All Categories Pill */}
         <button
+          onClick={() => updateParams({ category: "" })}
           type="button"
-          className="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer flex items-center gap-1.5 bg-[#1a1a1a] text-white shadow-sm"
+          className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
+            activeCategory === ""
+              ? "bg-stone-800 text-white border-stone-800"
+              : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+          }`}
         >
-          <span>All Disciplines</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-white/20 text-white">
-            42
-          </span>
+          <span>All Categories</span>
+          {!isCategoriesLoading && (
+            <span
+              className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-stone-100 text-stone-500 ${
+                activeCategory === ""
+                  ? "bg-white/20 text-white"
+                  : "bg-stone-100 text-stone-600"
+              }`}
+            >
+              {totalCategoryEvents}
+            </span>
+          )}
         </button>
 
-        <button
-          type="button"
-          className="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer flex items-center gap-1.5 bg-white hover:bg-stone-100 text-stone-600 border border-[#E2DFD4]"
-        >
-          <span>Technology & AI</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-stone-100 text-stone-500">
-            14
-          </span>
-        </button>
-
-        <button
-          type="button"
-          className="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer flex items-center gap-1.5 bg-white hover:bg-stone-100 text-stone-600 border border-[#E2DFD4]"
-        >
-          <span>Live Music & Concerts</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-stone-100 text-stone-500">
-            9
-          </span>
-        </button>
-
-        <button
-          type="button"
-          className="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer flex items-center gap-1.5 bg-white hover:bg-stone-100 text-stone-600 border border-[#E2DFD4]"
-        >
-          <span>Startups & Venture Capital</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-stone-100 text-stone-500">
-            8
-          </span>
-        </button>
-
-        <button
-          type="button"
-          className="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer flex items-center gap-1.5 bg-white hover:bg-stone-100 text-stone-600 border border-[#E2DFD4]"
-        >
-          <span>Fitness & Marathons</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-stone-100 text-stone-500">
-            5
-          </span>
-        </button>
-
-        <button
-          type="button"
-          className="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer flex items-center gap-1.5 bg-white hover:bg-stone-100 text-stone-600 border border-[#E2DFD4]"
-        >
-          <span>Arts & Culture</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-stone-100 text-stone-500">
-            4
-          </span>
-        </button>
-
-        <button
-          type="button"
-          className="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer flex items-center gap-1.5 bg-white hover:bg-stone-100 text-stone-600 border border-[#E2DFD4]"
-        >
-          <span>Workshops & Masterclasses</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-stone-100 text-stone-500">
-            2
-          </span>
-        </button>
+        {isCategoriesLoading
+          ? [...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                className="h-8 w-24 rounded-full bg-stone-200 animate-pulse shrink-0"
+              />
+            ))
+          : categories.map((cat) => (
+              <button
+                key={cat._id || cat.id}
+                type="button"
+                onClick={() => updateParams({ category: cat.name })}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
+                  activeCategory === cat.name
+                    ? "bg-stone-800 text-white border-stone-800"
+                    : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+                }`}
+              >
+                <span>{cat.name}</span>
+                <span
+                  className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-stone-100 text-stone-500 ${
+                    activeCategory === cat.name
+                      ? "bg-white/20 text-white"
+                      : "bg-stone-100 text-stone-600"
+                  }`}
+                >
+                  {cat.eventCount || 0}
+                </span>
+              </button>
+            ))}
       </div>
 
       {/* Format & Pricing Pills */}
       <div className="flex items-center justify-between text-xs text-stone-500 flex-wrap gap-2 pt-1">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-semibold text-stone-700">Format:</span>
-          {
-            ["", "in-person", "online", "hybrid"].map((f, i) => (
-              <button
-                key={i}
-                onClick={() => handleFormatChange(f)}
-                type="button"
-                className={
-                  `px-2.5 py-1 rounded-lg border text-xs font-medium capitalize transition-all cursor-pointer ${activeFormat === f ? "bg-stone-800 text-white border-stone-800" : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
-                  }`
-                }
-              >
-                {f ? f : "All format"}
-              </button>
-            ))
-          }
+          {["", "in-person", "online", "hybrid"].map((f, i) => (
+            <button
+              key={i}
+              onClick={() => handleFormatChange(f)}
+              type="button"
+              className={`px-2.5 py-1 rounded-lg border text-xs font-medium capitalize transition-all cursor-pointer ${
+                activeFormat === f
+                  ? "bg-stone-800 text-white border-stone-800"
+                  : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+              }`}
+            >
+              {f !== "" ? f : "All format"}
+            </button>
+          ))}
         </div>
 
         <div className="flex items-center gap-2">
@@ -236,21 +228,33 @@ export default function EventFilterBar() {
           <button
             onClick={() => handleIsPaid("")}
             type="button"
-            className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${filters.isPaid === "" || null ? "bg-stone-800 text-white border-stone-800" : "bg-white border-[#DDD9CE] text-stone-600"}`}
+            className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+              filters.isPaid === "" || null
+                ? "bg-stone-800 text-white border-stone-800"
+                : "bg-white border-[#DDD9CE] text-stone-600"
+            }`}
           >
             All
           </button>
           <button
             onClick={() => handleIsPaid(false)} // isPaid = false
             type="button"
-            className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${filters.isPaid === false ? "bg-emerald-700 text-white border-emerald-700" : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"}`}
+            className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+              filters.isPaid === false
+                ? "bg-emerald-700 text-white border-emerald-700"
+                : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+            }`}
           >
             Free
           </button>
           <button
             onClick={() => handleIsPaid(true)} // isPaid = true
             type="button"
-            className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${filters.isPaid === true ? "bg-stone-800 text-white border-stone-800" : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"}`}
+            className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+              filters.isPaid === true
+                ? "bg-stone-800 text-white border-stone-800"
+                : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+            }`}
           >
             Paid
           </button>
@@ -258,4 +262,4 @@ export default function EventFilterBar() {
       </div>
     </div>
   );
-}
+});
